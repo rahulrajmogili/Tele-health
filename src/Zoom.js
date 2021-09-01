@@ -2,17 +2,35 @@ import { React, useEffect } from 'react'
 import { ZoomMtg } from '@zoomus/websdk';
 import './Zoom.css';
 
-function Zoom() {
-  var signatureEndpoint = 'http://localhost:4000'
-  var apiKey = 'JWT_API_KEY'
-  var meetingNumber = 123456789
-  var role = 0
-  var leaveUrl = 'http://localhost:9999' // our redirect url
-  var userName = 'WebSDK'
-  var userEmail = ''
-  var passWord = ''
-  var signature = '' // need to generate based on meeting id
+const crypto = require('crypto') // crypto comes with Node.js
 
+function generateSignature(apiKey, apiSecret, meetingNumber, role) {
+  return new Promise((res, rej) => {
+    // Prevent time sync issue between client signature generation and zoom 
+    const timestamp = new Date().getTime() - 30000
+    const msg = Buffer.from(apiKey + meetingNumber + timestamp + role).toString('base64')
+    const hash = crypto.createHmac('sha256', apiSecret).update(msg).digest('base64')
+    const signature = Buffer.from(`${apiKey}.${meetingNumber}.${timestamp}.${role}.${hash}`).toString('base64')
+  
+  res(signature)
+  })
+}
+
+var apiKey = 'JWT_API_KEY'
+var apiSecret = ''
+var meetingNumber = 123456789
+var role = 0
+var leaveUrl = 'http://localhost:9999' // our redirect url
+var userName = 'WebSDK'
+var userEmail = ''
+var passWord = ''
+var signature = '' 
+
+generateSignature(apiKey, apiSecret, meetingNumber, role).then((res) => {
+  signature = res;
+}) // need to generate based on meeting id
+
+function Zoom() {
   useEffect(() => {
     showZoomDiv();
     ZoomMtg.setZoomJSLib('https://source.zoom.us/{VERSION_NUMBER}/lib', '/av');
