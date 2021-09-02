@@ -11,7 +11,6 @@ function generateSignature(apiKey, apiSecret, meetingNumber, role) {
     const msg = Buffer.from(apiKey + meetingNumber + timestamp + role).toString('base64')
     const hash = crypto.createHmac('sha256', apiSecret).update(msg).digest('base64')
     const signature = Buffer.from(`${apiKey}.${meetingNumber}.${timestamp}.${role}.${hash}`).toString('base64')
-  
   res(signature)
   })
 }
@@ -31,6 +30,8 @@ generateSignature(apiKey, apiSecret, meetingNumber, role).then((res) => {
 }) // need to generate based on meeting id
 
 function Zoom() {
+  const video = document.getElementById("zmmtg-root")
+
   useEffect(() => {
     showZoomDiv();
     ZoomMtg.setZoomJSLib('https://source.zoom.us/{VERSION_NUMBER}/lib', '/av');
@@ -39,8 +40,25 @@ function Zoom() {
     initialMeeting();
   }, []);
 
+  const getMedia = () => {
+    let stream = null
+
+    try {
+      stream = navigator.mediaDevices.getUserMedia({video: true, audio: true})
+      console.log(stream)
+    } catch (err) {
+      console.error(`The error is get Media:- ${err}`)
+    }
+  }
+
   const showZoomDiv = () => {
-    document.getElementById("zmmtg-root").style.display = "block";
+    navigator.mediaDevices.getUserMedia({
+      audio: true,
+      video: false
+    }).then(stream => {
+      video.srcObject = stream;
+    }).catch(console.error)
+    video.style.display = "block";
   }
 
   const initialMeeting = () => {
