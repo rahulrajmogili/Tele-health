@@ -15,14 +15,14 @@ function generateSignature(apiKey, apiSecret, meetingNumber, role) {
   })
 }
 
-var apiKey = 'JWT_API_KEY'
-var apiSecret = ''
-var meetingNumber = 123456789
+var apiKey = 'flRhZz2mS-WsK-dUaofA1A'
+var apiSecret = 'GdnORxkmNVYOek9jbPAKSPbrNSLKCA0tvZ6V'
+var meetingNumber = 79280724127
 var role = 0
 var leaveUrl = 'http://localhost:9999' // our redirect url
 var userName = 'WebSDK'
-var userEmail = ''
-var passWord = ''
+var userEmail = 'test@gmail.com'
+var passWord = 'Z5QA6b'
 var signature = '' 
 
 generateSignature(apiKey, apiSecret, meetingNumber, role).then((res) => {
